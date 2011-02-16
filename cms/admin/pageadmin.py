@@ -36,7 +36,7 @@ from django.contrib.admin.util import unquote, get_deleted_objects
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db import transaction, models
+from django.db import transaction, models, router
 from django.forms import Widget, Textarea, CharField
 from django.http import HttpResponseRedirect, HttpResponse, Http404, \
     HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed
@@ -963,10 +963,26 @@ class PageAdmin(model_admin):
         titleobj = get_object_or_404(Title, page__id=object_id, language=language)
         plugins = CMSPlugin.objects.filter(placeholder__page__id=object_id, language=language)
         
-        deleted_objects, perms_needed = get_deleted_objects([titleobj], titleopts, request.user, self.admin_site)
-        to_delete_plugins, perms_needed_plugins = get_deleted_objects(plugins, pluginopts, request.user, self.admin_site)
+        using = router.db_for_write(self.model)
+        
+        status = get_deleted_objects([titleobj], titleopts, request.user, self.admin_site, using)
+        if len(status) == 3:
+            deleted_objects, perms_needed, protected = status
+        else:
+            deleted_objects, perms_needed = status
+            protected = None
+            
+        status_plugins = get_deleted_objects(plugins, pluginopts, request.user, self.admin_site, using)
+        
+        if len(status_plugins) == 3:
+            to_delete_plugins, perms_needed_plugins, protected_plugins = status_plugins
+        else:
+            to_delete_plugins, perms_needed_plugins = status_plugins
+            protected_plugins = None
+
         deleted_objects.append(to_delete_plugins)
         perms_needed = set( list(perms_needed) + list(perms_needed_plugins) )
+        protected = set( list(protected) + list(protected_plugins) )
         
 
         if request.method == 'POST':
@@ -992,13 +1008,19 @@ class PageAdmin(model_admin):
             if not self.has_change_permission(request, None):
                 return HttpResponseRedirect("../../../../")
             return HttpResponseRedirect("../../")
-
+        
+        if perms_needed or protected:
+            title = _("Cannot delete %(name)s") % {"name": object_name}
+        else:
+            title = _("Are you sure?")
+            
         context = {
-            "title": _("Are you sure?"),
+            "title": title,
             "object_name": force_unicode(titleopts.verbose_name),
             "object": titleobj,
             "deleted_objects": deleted_objects,
             "perms_lacking": perms_needed,
+            "protected": protected,
             "opts": titleopts,
             "root_path": self.admin_site.root_path,
             "app_label": app_label,
