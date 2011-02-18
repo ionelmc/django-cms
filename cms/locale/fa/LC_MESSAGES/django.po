@@ -8,7 +8,11 @@ msgstr ""
 "Project-Id-Version: django-cms\n"
 "Report-Msgid-Bugs-To: https://github.com/divio/django-cms/issues\n"
 "POT-Creation-Date: 2011-02-07 07:20-0600\n"
+<<<<<<< HEAD
+"PO-Revision-Date: 2011-02-07 13:38+0000\n"
+=======
 "PO-Revision-Date: 2011-02-16 17:11+0000\n"
+>>>>>>> hotfix/2.1.2
 "Last-Translator: ojii <me@ojii.ch>\n"
 "Language-Team: divio.ch <developers@divio.ch>\n"
 "MIME-Version: 1.0\n"
@@ -16,9 +20,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fa\n"
 "Plural-Forms: nplurals=1; plural=0\n"
+<<<<<<< HEAD
+"X-Poedit-Language: English\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Country: SWITZERLAND\n"
+=======
 "X-Poedit-Country: SWITZERLAND\n"
 "X-Poedit-Language: English\n"
 "X-Poedit-SourceCharset: utf-8\n"
+>>>>>>> hotfix/2.1.2
 
 #: plugin_base.py:100
 msgid "Advanced options"
@@ -116,6 +126,10 @@ msgid "user"
 msgstr "کاربر"
 
 #: admin/forms.py:215
+<<<<<<< HEAD
+msgid "Add page permission requires also access to children, or descendants, otherwise added page can't be changed by its creator."
+msgstr " اجازه دسترسی به اضافه کردن صفحه اجازه دسترسی به صفحات زیرین، و یا صفحات فرزند، را نیز نیاز دارد؛ در غیر اینصورت خود ایجادکننده صفحه قابلیت تغییر آن را نخواهد داشت."
+=======
 msgid ""
 "Add page permission requires also access to children, or descendants, "
 "otherwise added page can't be changed by its creator."
@@ -123,6 +137,7 @@ msgstr ""
 " اجازه دسترسی به اضافه کردن صفحه اجازه دسترسی به صفحات زیرین، و یا "
 "صفحات فرزند، را نیز نیاز دارد؛ در غیر اینصورت خود ایجادکننده صفحه "
 "قابلیت تغییر آن را نخواهد داشت."
+>>>>>>> hotfix/2.1.2
 
 #: admin/forms.py:218
 msgid "Add page permission also requires edit page permission."
@@ -159,12 +174,17 @@ msgid "Notify user"
 msgstr "هشدار به کاربر"
 
 #: admin/forms.py:296
+<<<<<<< HEAD
+msgid "Send email notification to user about username or password change. Requires user email."
+msgstr "از طریق ایمیل به کاربر در مورد نام کاربری یا تغییر رمز عبور را مطلع کن. نیاز به ایمیل کاربر دارد."
+=======
 msgid ""
 "Send email notification to user about username or password change. "
 "Requires user email."
 msgstr ""
 "از طریق ایمیل به کاربر در مورد نام کاربری یا تغییر رمز عبور را مطلع "
 "کن. نیاز به ایمیل کاربر دارد."
+>>>>>>> hotfix/2.1.2
 
 #: admin/forms.py:316
 msgid "New password"
@@ -179,6 +199,13 @@ msgid "Email notification requires valid email address."
 msgstr "هشدار از طریق ایمیل به ایمیل معتبر نیاز دارد."
 
 #: admin/forms.py:339
+<<<<<<< HEAD
+msgid "The permission to add new pages requires the permission to change pages!"
+msgstr "اجازه اضافه کردن صفحات جدید نیاز به اجازه ویرایش صفحه دارد!"
+
+#: admin/forms.py:341
+msgid "The permission to add new users requires the permission to change users!"
+=======
 msgid ""
 "The permission to add new pages requires the permission to change "
 "pages!"
@@ -188,6 +215,7 @@ msgstr "اجازه اضافه کردن صفحات جدید نیاز به اجا�
 msgid ""
 "The permission to add new users requires the permission to change "
 "users!"
+>>>>>>> hotfix/2.1.2
 msgstr "اجازه ایجاد کاربران نیاز به اجازه تغییر کاربر دارد."
 
 #: admin/forms.py:343
@@ -613,12 +641,17 @@ msgid "changed by"
 msgstr "تغییریافته به وسیله"
 
 #: models/pagemodel.py:64
+<<<<<<< HEAD
+msgid "When the page should go live. Status must be \"Published\" for page to go live."
+msgstr "زمانی که صفحه منتشر می-شود. وضعیت صفحه باید «منتشرشده» باشید تا این رخ دهد."
+=======
 msgid ""
 "When the page should go live. Status must be \"Published\" for page to go"
 " live."
 msgstr ""
 "زمانی که صفحه منتشر می-شود. وضعیت صفحه باید «منتشرشده» باشید تا این رخ"
 " دهد."
+>>>>>>> hotfix/2.1.2
 
 #: models/pagemodel.py:65
 msgid "When to expire the page. Leave empty to never expire."
@@ -629,6 +662,15 @@ msgid "All ancestors will not be displayed in the navigation"
 msgstr "تمامی اجداد در گردش نمایش داده نمی-شوند."
 
 #: models/pagemodel.py:68
+<<<<<<< HEAD
+msgid "An unique identifier that is used with the page_url templatetag for linking to this page"
+msgstr "شناسه-ی بکتایی که برای تگ الگوی page_url برای آدرس به این صفحه استفاده می-شود."
+
+#: models/pagemodel.py:69
+msgid "attached menu"
+msgstr ""
+
+=======
 msgid ""
 "An unique identifier that is used with the page_url templatetag for "
 "linking to this page"
@@ -640,6 +682,7 @@ msgstr ""
 msgid "attached menu"
 msgstr ""
 
+>>>>>>> hotfix/2.1.2
 #: models/pagemodel.py:70
 msgid "is published"
 msgstr "منتشرشده"
@@ -1094,6 +1137,14 @@ msgid ""
 "\"brains\" and \"zombies\""
 msgstr ""
 
+#: plugins/twitter/models.py:16
+msgid "query"
+msgstr ""
+
+#: plugins/twitter/models.py:16
+msgid "Example: \"brains AND zombies AND from:umbrella AND to:nemesis\": tweets from the user \"umbrella\" to the user \"nemesis\" that contain the words \"brains\" and \"zombies\""
+msgstr ""
+
 #: plugins/video/cms_plugins.py:10
 msgid "Video"
 msgstr "ویدیو"
@@ -1115,12 +1166,17 @@ msgid "movie url"
 msgstr "آدرس اینترنتی ویدیو"
 
 #: plugins/video/models.py:10
+<<<<<<< HEAD
+msgid "vimeo or youtube video url. Example: http://www.youtube.com/watch?v=YFa59lK-kpo"
+msgstr "آدرس ویدیو در YouTube یا vimeo. مثال: http://www.youtube.com/watch?v=YFa59lK-kpo"
+=======
 msgid ""
 "vimeo or youtube video url. Example: http://www.youtube.com/watch?v"
 "=YFa59lK-kpo"
 msgstr ""
 "آدرس ویدیو در YouTube یا vimeo. مثال: http://www.youtube.com/watch?v"
 "=YFa59lK-kpo"
+>>>>>>> hotfix/2.1.2
 
 #: plugins/video/models.py:11
 msgid "preview image file"
@@ -1796,6 +1852,7 @@ msgstr ""
 
 #: test/apps/pluginapp/plugins/manytomany_rel/cms_plugins.py:13
 msgid "Articles"
+<<<<<<< HEAD
 msgstr ""
 
 #: test/apps/sampleapp/cms_app.py:7
@@ -1814,6 +1871,26 @@ msgstr ""
 msgid "sample account page"
 msgstr ""
 
+=======
+msgstr ""
+
+#: test/apps/sampleapp/cms_app.py:7
+msgid "Sample App"
+msgstr ""
+
+#: test/apps/sampleapp/menu.py:17
+msgid "sample root page"
+msgstr ""
+
+#: test/apps/sampleapp/menu.py:18
+msgid "sample settings page"
+msgstr ""
+
+#: test/apps/sampleapp/menu.py:19
+msgid "sample account page"
+msgstr ""
+
+>>>>>>> hotfix/2.1.2
 #: test/apps/sampleapp/menu.py:20
 msgid "sample my profile page"
 msgstr ""

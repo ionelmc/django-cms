@@ -36,7 +36,7 @@ from django.contrib.admin.util import unquote, get_deleted_objects
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db import transaction, models, router
+from django.db import transaction, models
 from django.forms import Widget, Textarea, CharField
 from django.http import HttpResponseRedirect, HttpResponse, Http404, \
     HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed
@@ -47,6 +47,13 @@ from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from menus.menu_pool import menu_pool
 import os
+
+# silly hack to test features/ fixme
+import inspect
+if inspect.getargspec(get_deleted_objects)[0][-1] == 'using':
+    from django.db import router
+else:
+    router = False
 
 model_admin = admin.ModelAdmin
 create_on_success = lambda x: x
@@ -71,9 +78,6 @@ class PageAdmin(model_admin):
     top_fields = []
     general_fields = ['title', 'slug', ('published', 'in_navigation')]
     add_general_fields = ['title', 'slug', 'language', 'template']
-    if settings.CMS_DBGETTEXT:
-        # no need to select language for page
-        add_general_fields.remove('language')
     advanced_fields = ['reverse_id',  'overwrite_url', 'redirect', 'login_required', 'limit_visibility_in_menu']
     template_fields = ['template']
     change_list_template = "admin/cms/page/change_list.html"
@@ -221,7 +225,7 @@ class PageAdmin(model_admin):
             obj.tree_id = 0
             obj.level = 0
             obj.pk = None
-            obj.insert_at(parent, commit=False)
+            obj.insert_at(parent, save=False)
             obj.pk = pk
             obj.save(no_signals=True)
             obj.save()
@@ -438,7 +442,7 @@ class PageAdmin(model_admin):
                             copy_languages[plugin.language] = dict_cms_languages[plugin.language]
 
                 language = get_language_from_request(request, obj)
-                if copy_languages and not settings.CMS_DBGETTEXT and len(settings.CMS_LANGUAGES) > 1:
+                if copy_languages and len(settings.CMS_LANGUAGES) > 1:
                     show_copy = True
                 widget = PluginEditor(attrs={
                     'installed': installed_plugins,
@@ -580,8 +584,7 @@ class PageAdmin(model_admin):
         context.update({
             'language': language,
             'language_tabs': languages,
-            'show_language_tabs': len(languages) > 1 and \
-                not settings.CMS_DBGETTEXT,
+            'show_language_tabs': len(languages) > 1,
         })
         return context
 
@@ -963,23 +966,16 @@ class PageAdmin(model_admin):
         titleobj = get_object_or_404(Title, page__id=object_id, language=language)
         plugins = CMSPlugin.objects.filter(placeholder__page__id=object_id, language=language)
         
-        using = router.db_for_write(self.model)
-        
-        status = get_deleted_objects([titleobj], titleopts, request.user, self.admin_site, using)
-        if len(status) == 3:
-            deleted_objects, perms_needed, protected = status
+        using = []
+        if router:
+            using = router.db_for_read(self.model)
+            deleted_objects, perms_needed, protected =  get_deleted_objects([titleobj], titleopts, request.user, self.admin_site, using)[:2]
+            to_delete_plugins, perms_needed_plugins, protected_plugins = get_deleted_objects(plugins, pluginopts, request.user, self.admin_site, using)[:2]
         else:
-            deleted_objects, perms_needed = status
-            protected = None
+            deleted_objects, perms_needed =  get_deleted_objects([titleobj], titleopts, request.user, self.admin_site, 4)
+            to_delete_plugins, perms_needed_plugins = get_deleted_objects(plugins, pluginopts, request.user, self.admin_site, 4)
+            protected_plugins = protected = None
             
-        status_plugins = get_deleted_objects(plugins, pluginopts, request.user, self.admin_site, using)
-        
-        if len(status_plugins) == 3:
-            to_delete_plugins, perms_needed_plugins, protected_plugins = status_plugins
-        else:
-            to_delete_plugins, perms_needed_plugins = status_plugins
-            protected_plugins = None
-
         deleted_objects.append(to_delete_plugins)
         perms_needed = set( list(perms_needed) + list(perms_needed_plugins) )
         protected = set( list(protected) + list(protected_plugins) )
@@ -1392,6 +1388,6 @@ class PageAdmin(model_admin):
     def lookup_allowed(self, key, *args, **kwargs):
         if key == 'site__exact':
             return True
-        return super(PageAdmin, self).lookup_allowed(key)
+        return super(PageAdmin, self).lookup_allowed(key, *args)
 
 admin.site.register(Page, PageAdmin)

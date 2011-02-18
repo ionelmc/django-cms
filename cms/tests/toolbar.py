@@ -1,5 +1,6 @@
-from cms.test.testcases import SettingsOverrideTestCase
-from cms.test.util.context_managers import UserLoginContext
+from __future__ import with_statement
+from cms.test_utils.testcases import SettingsOverrideTestCase
+from cms.test_utils.util.context_managers import UserLoginContext, SettingsOverride
 from django.conf import settings
 
 
@@ -9,8 +10,9 @@ class ToolbarTests(SettingsOverrideTestCase):
     def test_01_static_html(self):
         page = self.create_page(published=True)
         superuser = self.get_superuser()
-        with UserLoginContext(self, superuser):
-            response = self.client.get('%sstatic.html?edit' % settings.MEDIA_URL)
-            self.assertTemplateNotUsed(response, 'cms/toolbar/toolbar.html')
-            response = self.client.get('%s?edit' % page.get_absolute_url())
-            self.assertTemplateUsed(response, 'cms/toolbar/toolbar.html')
+        with SettingsOverride(DEBUG=True):
+            with UserLoginContext(self, superuser):
+                response = self.client.get('%sstatic.html?edit' % settings.MEDIA_URL)
+                self.assertTemplateNotUsed(response, 'cms/toolbar/toolbar.html')
+                response = self.client.get('%s?edit' % page.get_absolute_url())
+                self.assertTemplateUsed(response, 'cms/toolbar/toolbar.html')

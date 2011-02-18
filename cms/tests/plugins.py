@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import with_statement
 from cms.exceptions import PluginAlreadyRegistered, PluginNotRegistered
 from cms.models import Page, Placeholder
 from cms.models.pluginmodel import CMSPlugin
@@ -10,16 +11,18 @@ from cms.plugins.inherit.models import InheritPagePlaceholder
 from cms.plugins.text.models import Text
 from cms.plugins.text.utils import plugin_tags_to_id_list, \
     plugin_tags_to_admin_html
-from cms.test.testcases import CMSTestCase, URL_CMS_PAGE, URL_CMS_PAGE_ADD, \
+from cms.test_utils.testcases import CMSTestCase, URL_CMS_PAGE, URL_CMS_PAGE_ADD, \
     URL_CMS_PLUGIN_ADD, URL_CMS_PLUGIN_EDIT, URL_CMS_PAGE_CHANGE, \
     URL_CMS_PLUGIN_REMOVE
+from cms.test_utils.util.context_managers import SettingsOverride
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.widgets import Media
 from django.template import RequestContext
-from testapp.pluginapp.models import Article, Section
-from testapp.pluginapp.plugins.manytomany_rel.models import ArticlePluginModel
+from project.pluginapp.models import Article, Section
+from project.pluginapp.plugins.manytomany_rel.models import ArticlePluginModel
 import os
 
     
@@ -339,7 +342,7 @@ class PluginsTestCase(PluginsTestBaseCase):
             placeholder=body, 
             position=1, 
             language=settings.LANGUAGE_CODE, lat=1, lng=1)
-        plugin.insert_at(None, position='last-child', commit=True)
+        plugin.insert_at(None, position='last-child', save=True)
         
         page = self.create_page(title='inherit from page')
         
@@ -352,7 +355,7 @@ class PluginsTestCase(PluginsTestBaseCase):
             language=settings.LANGUAGE_CODE,
             from_page=inheritfrompage,
             from_language=settings.LANGUAGE_CODE)
-        inherit_plugin.insert_at(None, position='last-child', commit=True)
+        inherit_plugin.insert_at(None, position='last-child', save=True)
         
         request = self.get_request()
         context = RequestContext(request, {})
@@ -369,11 +372,11 @@ class PluginsTestCase(PluginsTestBaseCase):
             language=settings.LANGUAGE_CODE,
         )
         plugin.file.save("UPPERCASE.JPG", SimpleUploadedFile("UPPERCASE.jpg", "content"), False)
-        plugin.insert_at(None, position='last-child', commit=True)
-        
+        plugin.insert_at(None, position='last-child', save=True)
         self.assertNotEquals(plugin.get_icon_url().find('jpg'), -1)
-        response = self.client.get(plugin.get_icon_url(), follow=True)
-        self.assertEqual(response.status_code, 200)
+        with SettingsOverride(DEBUG=True):
+            response = self.client.get(plugin.get_icon_url(), follow=True)
+            self.assertEqual(response.status_code, 200)
         # Nuke everything in the storage location directory (since removing just 
         # our file would still leave a useless directory structure)
         #
@@ -404,7 +407,7 @@ class PluginsTestCase(PluginsTestBaseCase):
             placeholder=placeholder, 
             position=1, 
             language=self.FIRST_LANG)
-        plugin_base.insert_at(None, position='last-child', commit=False)
+        plugin_base.insert_at(None, position='last-child', save=False)
                 
         plugin = Text(body='')
         plugin_base.set_base_attr(plugin)
@@ -415,7 +418,7 @@ class PluginsTestCase(PluginsTestBaseCase):
             placeholder=placeholder, 
             position=1, 
             language=self.FIRST_LANG)
-        plugin_ref_1_base.insert_at(plugin_base, position='last-child', commit=False)    
+        plugin_ref_1_base.insert_at(plugin_base, position='last-child', save=False)    
         
         plugin_ref_1 = Text(body='')
         plugin_ref_1_base.set_base_attr(plugin_ref_1)
@@ -426,7 +429,7 @@ class PluginsTestCase(PluginsTestBaseCase):
             placeholder=placeholder, 
             position=2, 
             language=self.FIRST_LANG)
-        plugin_ref_2_base.insert_at(plugin_base, position='last-child', commit=False)    
+        plugin_ref_2_base.insert_at(plugin_base, position='last-child', save=False)    
         
         plugin_ref_2 = Text(body='')
         plugin_ref_2_base.set_base_attr(plugin_ref_2)
@@ -586,7 +589,7 @@ class PluginManyToManyTestCase(PluginsTestBaseCase):
             placeholder=placeholder, 
             position=1, 
             language=self.FIRST_LANG)
-        plugin.insert_at(None, position='last-child', commit=True)
+        plugin.insert_at(None, position='last-child', save=True)
         
         edit_url = URL_CMS_PLUGIN_EDIT + str(plugin.pk) + "/"
         

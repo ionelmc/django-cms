@@ -21,12 +21,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, get_language, ugettext
 from menus.menu_pool import menu_pool
 from os.path import join
-from publisher.errors import MpttPublisherCantPublish
-from publisher.mptt_support import Mptt
+from cms.publisher.errors import MpttPublisherCantPublish
+from mptt.models import MPTTModel
 import copy
 
 
-class Page(Mptt):
+class Page(MPTTModel):
     """
     A simple hierarchical page model
     """
@@ -59,7 +59,8 @@ class Page(Mptt):
     created_by = models.CharField(_("created by"), max_length=70, editable=False)
     changed_by = models.CharField(_("changed by"), max_length=70, editable=False)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
-    creation_date = models.DateTimeField(editable=False, default=datetime.now)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    changed_date = models.DateTimeField(auto_now=True)
     publication_date = models.DateTimeField(_("publication date"), null=True, blank=True, help_text=_('When the page should go live. Status must be "Published" for page to go live.'), db_index=True)
     publication_end_date = models.DateTimeField(_("publication end date"), null=True, blank=True, help_text=_('When to expire the page. Leave empty to never expire.'), db_index=True)
     in_navigation = models.BooleanField(_("in navigation"), default=True, db_index=True)
@@ -548,9 +549,6 @@ class Page(Mptt):
                 ancestors = self.get_cached_ancestors(ascending=True)
                 if self.parent_id and ancestors[-1].pk == home_pk and not self.get_title_obj_attribute("has_url_overwrite", language, fallback) and path:
                     path = "/".join(path.split("/")[1:])
-            
-        if settings.CMS_DBGETTEXT and settings.CMS_DBGETTEXT_SLUGS:
-            path = '/'.join([ugettext(p) for p in path.split('/')])
 
         return urljoin(reverse('pages-root'), path)
     
@@ -581,11 +579,6 @@ class Page(Mptt):
         try:
             attribute = getattr(self.get_title_obj(
                     language, fallback, version_id, force_reload), attrname)
-            if attribute and settings.CMS_DBGETTEXT:
-                if attrname in ('slug', 'path') and \
-                        not settings.CMS_DBGETTEXT_SLUGS:
-                    return attribute
-                return ugettext(attribute)
             return attribute
         except AttributeError:
             return None
@@ -1051,14 +1044,14 @@ class Page(Mptt):
         if not self.publisher_public_id:
             # is there anybody on left side?
             if prev_sibling:
-                obj.insert_at(prev_sibling.publisher_public, position='right', commit=False)
+                obj.insert_at(prev_sibling.publisher_public, position='right', save=False)
             else:
                 # it is a first time published object, perform insert_at:
                 parent, public_parent = self.parent, None
                 if parent:
                     public_parent = parent.publisher_public
                 if public_parent:
-                    obj.insert_at(public_parent, commit=False)
+                    obj.insert_at(public_parent, save=False)
         else:
             # check if object was moved / structural tree change
             prev_public_sibling = self.old_public.get_previous_fitlered_sibling()
@@ -1116,10 +1109,7 @@ class Page(Mptt):
                 found[placeholder_name] = placeholder
 
 def _reversion():
-    if 'publisher' in settings.INSTALLED_APPS:
-        exclude_fields = ['publisher_is_draft', 'publisher_public', 'publisher_state']
-    else:
-        exclude_fields = [] 
+    exclude_fields = ['publisher_is_draft', 'publisher_public', 'publisher_state']
             
     reversion_register(
         Page,

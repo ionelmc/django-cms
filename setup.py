@@ -50,6 +50,7 @@ setup(
         'django-classy-tags>=0.2.2',
         'PIL>=1.1.6',
         'south>=0.7.2',
+        'django-mptt>=0.4.2',
     ],
     packages=find_packages(exclude=["example", "example.*","testdata","testdata.*"]),
     package_data={
@@ -77,5 +78,6 @@ setup(
             'templates/menu/*.html',
         ],
     },
+    test_suite = "cms.test.run_tests.run_tests",
     zip_safe = False
 )

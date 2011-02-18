@@ -5,8 +5,8 @@ from cms.models.placeholdermodel import Placeholder
 from cms.models.pluginmodel import CMSPlugin
 from cms.plugins.text.models import Text
 from cms.sitemaps import CMSSitemap
-from cms.test.testcases import CMSTestCase, URL_CMS_PAGE, URL_CMS_PAGE_ADD
-from cms.test.util.context_managers import LanguageOverride, SettingsOverride
+from cms.test_utils.testcases import CMSTestCase, URL_CMS_PAGE, URL_CMS_PAGE_ADD
+from cms.test_utils.util.context_managers import LanguageOverride, SettingsOverride
 from cms.utils.page_resolver import get_page_from_request
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -326,7 +326,7 @@ class PagesTestCase(CMSTestCase):
             position=1, 
             language=settings.LANGUAGES[0][0]
         )
-        plugin_base.insert_at(None, position='last-child', commit=False)
+        plugin_base.insert_at(None, position='last-child', save=False)
                 
         plugin = Text(body='')
         plugin_base.set_base_attr(plugin)
@@ -397,7 +397,7 @@ class PagesTestCase(CMSTestCase):
 
 
 class NoAdminPageTests(CMSTestCase):
-    urls = 'testapp.noadmin_urls'
+    urls = 'project.noadmin_urls'
     
     def setUp(self):
         admin = 'django.contrib.admin'

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from cms.models import Page, CMSPlugin
 from cms.models.moderatormodels import ACCESS_DESCENDANTS
-from cms.test.testcases import CMSTestCase, URL_CMS_PAGE_ADD, URL_CMS_PLUGIN_REMOVE
+from cms.test_utils.testcases import CMSTestCase, URL_CMS_PAGE_ADD, URL_CMS_PLUGIN_REMOVE
 from cms.utils.permissions import has_generic_permission
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -440,6 +440,9 @@ class PermissionModeratorTestCase(CMSTestCase):
         # perform movings under slave...
         self.login_user(self.user_slave)
         pg = self.move_page(pg, pc)
+        # We have to reload pe when using mptt >= 0.4.2, 
+        # so that mptt realized that pg is no longer a child of pe
+        pe = self.reload_page(pe)
         pe = self.move_page(pe, pg)
         
         # reload all - moving has changed some attributes
