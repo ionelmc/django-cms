@@ -1,5 +1,4 @@
 /* javascript for the frontend editing toolbar */
-
 function hide_iframe(){
     // needs to be a global function because it gets called 
     // from the iframe as `parent.hide_iframe`
