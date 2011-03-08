@@ -54,7 +54,7 @@ function edit_plugin(obj_id) {
 }
 
 function plugin_admin_html(plugin_id, icon_src, icon_alt) {
-    return '<img src="' + escapeHtml(icon_src) + '" ' +
+    return '<'+'img src="' + escapeHtml(icon_src) + '" ' +
         'alt="'+ escapeHtml(icon_alt) + '" ' +
         'title="'+ escapeHtml(icon_alt) + '" ' +
         'id="plugin_obj_' + plugin_id + '"/>';
