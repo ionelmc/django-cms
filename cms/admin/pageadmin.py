@@ -1009,6 +1009,8 @@ class PageAdmin(model_admin):
                 return HttpResponseRedirect("../../../../")
             return HttpResponseRedirect("../../")
         
+        object_name = force_unicode(titleopts.verbose_name)
+        
         if perms_needed or protected:
             title = _("Cannot delete %(name)s") % {"name": object_name}
         else:
@@ -1016,7 +1018,7 @@ class PageAdmin(model_admin):
             
         context = {
             "title": title,
-            "object_name": force_unicode(titleopts.verbose_name),
+            "object_name": object_name,
             "object": titleobj,
             "deleted_objects": deleted_objects,
             "perms_lacking": perms_needed,
