@@ -1,6 +1,8 @@
 import django
 from django.conf import settings
-if django.VERSION >= (1, 5):
+from distutils.version import LooseVersion
+
+if LooseVersion(django.get_version()) >= LooseVersion('1.5'):
     from django.contrib.auth import get_user_model #pylint: disable=W0611
     get_auth_model_name = lambda: settings.AUTH_USER_MODEL
 else:
