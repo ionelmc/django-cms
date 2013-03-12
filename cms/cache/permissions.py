@@ -3,7 +3,7 @@ from cms.utils import get_cms_setting
 from django.conf import settings
 from django.core.cache import cache
 
-from django.contrib.auth.models import User
+from cms.utils.aum import get_user_model; User=get_user_model()
 
 PERMISSION_KEYS = [
     'can_change', 'can_add', 'can_delete',

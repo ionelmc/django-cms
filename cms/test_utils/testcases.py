@@ -3,7 +3,7 @@ from cms.models import Page
 from cms.test_utils.util.context_managers import (UserLoginContext,
     SettingsOverride)
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
+from cms.utils.aum import get_user_model; User=get_user_model(); from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.context import Context

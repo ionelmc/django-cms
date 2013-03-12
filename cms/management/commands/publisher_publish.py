@@ -9,7 +9,7 @@ class Command(NoArgsCommand):
         self.publish_pages()
         
     def publish_pages(self):
-        from django.contrib.auth.models import User
+        from cms.utils.aum import get_user_model; User=get_user_model()
         from cms.models import Page
         from cms.utils.permissions import set_current_user
         

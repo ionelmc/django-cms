@@ -2,12 +2,11 @@
 import sys
 
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from cms.models.managers import PageModeratorStateManager
 from cms.models.pagemodel import Page
-
+from cms.utils.aum import get_user_model
 
 ################################################################################
 # Moderation
@@ -31,7 +30,7 @@ class PageModeratorState(models.Model):
     )
 
     page = models.ForeignKey(Page)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(get_user_model(), null=True)
     created = models.DateTimeField(auto_now_add=True)
     action = models.CharField(max_length=3, choices=_action_choices, null=True, blank=True)
     message = models.TextField(max_length=1000, blank=True, default="")
