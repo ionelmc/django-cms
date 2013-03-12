@@ -259,7 +259,7 @@ class PageAdmin(ModelAdmin):
                 obj.tree_id = old_obj.tree_id
 
         obj.save()
-        
+
         if 'recover' in request.path or 'history' in request.path:
             obj.pagemoderatorstate_set.all().delete()
             moderator.page_changed(obj, force_moderation_action=PageModeratorState.ACTION_CHANGED)
@@ -444,7 +444,7 @@ class PageAdmin(ModelAdmin):
 
         return form
 
-    def get_inline_instances(self, request):
+    def get_inline_instances(self, request, obj=None):
         inlines = super(PageAdmin, self).get_inline_instances(request)
         if get_cms_setting('PERMISSION') and hasattr(self, '_current_page')\
                 and self._current_page:
@@ -1090,7 +1090,7 @@ class PageAdmin(ModelAdmin):
         """
         Get html for descendants of given page
         Used for lazy loading pages in change_list.js
-        
+
         Permission checks is done in admin_utils.get_admin_menu_item_context
         which is called by admin_utils.render_admin_menu_item.
         """
